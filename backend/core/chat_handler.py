@@ -1,17 +1,7 @@
-# !pip install langchain
-# !pip install PyPDF2
-# !pip install tiktoken
-# !pip install langchain-google-genai pillow
-# !pip install faiss-cpu
-# # !pip install langchain_community
-
 
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-
-# from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-# from langchain.vectorstores import FAISS
 from langchain.vectorstores import FAISS
 import getpass
 import requests
@@ -20,6 +10,10 @@ from typing_extensions import Concatenate
 from langchain.chains.question_answering import load_qa_chain
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
+from dotenv import load_dotenv
+
+# user defined
+from core.s3_responses import S3Response
 
 
 file_url = "https://prataptech-guardian.s3.amazonaws.com/c30643ca-1f63-11ef-a149-8298d9ac4759.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZQ3DPEE7NKOHXSFU%2F20240531%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240531T153801Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=bad73577dd0d639242ba8247ad1587e89ae24d27286822cc1c4d7d0e1c604fb8"
@@ -28,9 +22,9 @@ file_url = "https://prataptech-guardian.s3.amazonaws.com/c30643ca-1f63-11ef-a149
 
 def handle_query(doc_url: str, query: str):
     try:
-        
+        load_dotenv()
         # to get pdf data
-        response = requests.get(file_url)
+        response = requests.get(doc_url)
         response.raise_for_status()
 
         pdf_file = BytesIO(response.content)
@@ -57,8 +51,12 @@ def handle_query(doc_url: str, query: str):
 
         texts = splitter_text.split_text(text)
         
-        if "GOOGLE_API_KEY" not in os.environ:
-            os.environ["GOOGLE_API_KEY"] = getpass.getpass("Provide your Google API Key")
+        google_api_key = os.getenv("GOOGLE_API_KEY")
+        if not google_api_key:
+            google_api_key = getpass("Enter your Google API key");
+            os.environ["GOOGLE_API_KEY"] = google_api_key
+        
+  
 
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
@@ -68,17 +66,18 @@ def handle_query(doc_url: str, query: str):
         #
         chain = load_qa_chain(llm, chain_type="stuff")
         
-        query = "what is the qualification "
+        # query = "what is the qualification "
         docs = doc_search.similarity_search(query)
         res = chain.run(input_documents=docs, question=query)
-        print("response is ")
-        print(res)
         
+        return S3Response(status=True, desc=res);
+
         
         
     except Exception as e:
-        print("error occurred")
-        print(e)
+        return S3Response(status=False, desc=str(e))
+        # print("error occurred")
+        # print(e)
         
     
-handle_query("fsdff", "sdfsdfs")
+# handle_query(file_url, "name of student")
