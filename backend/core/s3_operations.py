@@ -7,15 +7,19 @@ from core.s3_responses import S3Response
 
 
 # to upload file
-def upload_file(file_name: str, bucket: str) -> S3Response:
-    object_name: str = str(uuid.uuid1())
+def upload_file(file, bucket: str) -> S3Response:
+    object_name: str = str(uuid.uuid1()) + ".pdf"
     
     try:
         s3_client = boto3.client('s3')
-        with open(file_name, "rb") as f:
-            s3_client.upload_fileobj(f, bucket, object_name)
-        # response = s3_client.upload_file(file_name, bucket, object_name,)
-        return S3Response(status=False, desc=object_name)
+        s3_client.upload_fileobj(file.file, bucket, object_name)
+        
+        url = s3_client.generate_presigned_url(
+            "get_object", Params={"Bucket": bucket, 'Key': object_name}, ExpiresIn=3600
+        )
+        return S3Response(status=False, desc=url)
+    
+    
         
     except ClientError as e:
         return S3Response(status=False, desc=str(e))
@@ -34,6 +38,8 @@ def download_file(bucket: str, object_name) -> S3Response:
         print(e)
         return S3Response(status=False, desc=f"Database error {str(e)}")
         
+        
+
 
 # upload_file("bhanupratapCV.pdf", "prataptech-guardian")
 # 6557885e-1f24-11ef-848b-8298d9ac4759
