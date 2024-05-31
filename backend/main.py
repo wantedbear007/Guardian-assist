@@ -12,9 +12,6 @@ from model.chat_req_model import ChatModel
 from core.chat_handler import handle_query
 from database.services import register_pdf
 
-from prisma import Prisma
-
-
 
 app = FastAPI()
 
@@ -36,11 +33,14 @@ app.add_middleware(
 # add pre-endpoint i.e /v1/upload
 # add rate limiter
 
-url: str = "/v1"
+PRE_FIX: str = "/v1"
 
 
 @app.get("/")
 async def root():
+    """
+    endpoint to check server status.
+    """
     return {
         "time": datetime.now().isoformat(),
         "message": "Guardian servers are working.",
@@ -49,10 +49,18 @@ async def root():
 
     
 
-@app.post('/upload/')
-async def upload(file: UploadFile | None = None):
+@app.post(f'{PRE_FIX}/upload/')
+async def upload(file: UploadFile = File(...)):
+    
+    """
+    endpoint to upload file
+    """
     
     # validators
+    
+    if file.size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="File too large.")
+    
     if file is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No file found.")
     
@@ -74,8 +82,11 @@ async def upload(file: UploadFile | None = None):
     }
     
     
-@app.post('/chat/')
+@app.post(f'{PRE_FIX}/chat/')
 async def chat(item: ChatModel):
+    """
+    endpoint to get query
+    """
     if not item.doc_url or not item.query:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="All fields required")
     
@@ -93,28 +104,8 @@ async def chat(item: ChatModel):
         "response" : response.desc,
     }
     
-@app.get("/test/")
-async def text():
-    prisma = Prisma()
-    
-    try:
-        await prisma.connect()
-        
-        await prisma.document.create(
-            data={
-                'title': "hello"
-            }
-        )
-    except Exception as e:
-        print("error")
-        print(e)
-    return {"message" : "hello"}
-    
-        
-    
-        
-    
-    
+
+
 if __name__ == "__main__":
     uvicorn.run(app='main:app', reload=True)
     

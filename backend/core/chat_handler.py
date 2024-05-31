@@ -16,13 +16,12 @@ from dotenv import load_dotenv
 from core.s3_responses import S3Response
 
 
-file_url = "https://prataptech-guardian.s3.amazonaws.com/c30643ca-1f63-11ef-a149-8298d9ac4759.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZQ3DPEE7NKOHXSFU%2F20240531%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240531T153801Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=bad73577dd0d639242ba8247ad1587e89ae24d27286822cc1c4d7d0e1c604fb8"
 
+load_dotenv()
 
 
 def handle_query(doc_url: str, query: str):
     try:
-        load_dotenv()
         # to get pdf data
         response = requests.get(doc_url)
         response.raise_for_status()
