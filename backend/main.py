@@ -10,6 +10,9 @@ from core.s3_operations import upload_file, download_file
 from utils.constants import BUCKET, MAX_FILE_SIZE
 from model.chat_req_model import ChatModel
 from core.chat_handler import handle_query
+from database.services import register_pdf
+
+from prisma import Prisma
 
 
 
@@ -56,6 +59,9 @@ async def upload(file: UploadFile | None = None):
     if not allowed_file_types(file.filename):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File type not allowed")
     
+    # recording in database
+    await register_pdf(filename=file.filename)
+    
     # uploading
     file_upload: S3Response = upload_file(file=file, bucket=BUCKET);
     if not file_upload.status:
@@ -85,12 +91,28 @@ async def chat(item: ChatModel):
     return {
         "message" : "success",
         "response" : response.desc,
-    }    
+    }
+    
+@app.get("/test/")
+async def text():
+    prisma = Prisma()
+    
+    try:
+        await prisma.connect()
+        
+        await prisma.document.create(
+            data={
+                'title': "hello"
+            }
+        )
+    except Exception as e:
+        print("error")
+        print(e)
+    return {"message" : "hello"}
     
         
-    # print(len(item.query))
     
-    # return {"message": "fixed"}
+        
     
     
 if __name__ == "__main__":

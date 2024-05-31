@@ -1,0 +1,22 @@
+
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+
+// models
+model Document {
+    id Int @id @default(autoincrement())
+    filename String
+    fileSize Int @default(0)
+    createdDate DateTime @default(now()) 
+    // more fields ...
+}
