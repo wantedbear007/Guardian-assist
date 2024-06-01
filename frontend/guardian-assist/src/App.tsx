@@ -10,7 +10,9 @@ interface Props {
   image: number;
 }
 
-const url: string = "http://127.0.0.1:8000/v1/";
+// const url: string = "http://127.0.0.1:8000/v1/";
+const url: string = (import.meta.env.VITE_BACKEND_URL);
+
 
 // Chat card
 const ChatCard: React.FC<Props> = ({ message, image }) => {
