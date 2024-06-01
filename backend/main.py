@@ -112,8 +112,8 @@ async def chat(item: ChatModel):
     
 
 
-# if __name__ == "__main__":
-#     uvicorn.run(app='main:app', reload=True)
+if __name__ == "__main__":
+    uvicorn.run(app='main:app', reload=True)
     
         
         
