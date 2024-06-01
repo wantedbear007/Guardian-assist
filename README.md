@@ -1,6 +1,6 @@
 
 <body>
-  <h1>FastAPI React PDF Processing App</h1>
+  <h1>Guardian-assist: PDF interacting App</h1>
   <p>This repository contains a web application designed to upload PDF files to AWS S3, process them using Google GenAI LLM, and allow users to ask questions related to the content of the PDF file. The application utilizes FastAPI for the backend, React for the frontend, and integrates with AWS S3, Google GenAI, PostgreSQL with Supabase, and PyPDF2 for PDF content extraction.</p>
 
   <h2>Architecture Overview</h2>
