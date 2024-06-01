@@ -22,8 +22,7 @@ origins = [
     "http://127.0.0.1:8000/v1/upload",
     "http://localhost:8000",
     "http://localhost:5173",
-    
-    
+    "https://guardian-assist.vercel.app/"
 ]
 
 app.add_middleware(
@@ -113,8 +112,8 @@ async def chat(item: ChatModel):
     
 
 
-if __name__ == "__main__":
-    uvicorn.run(app='main:app', host='127.0.0.1', reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run(app='main:app', reload=True)
     
         
         
