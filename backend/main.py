@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, status, HTTPException
+from fastapi import FastAPI, File, UploadFile, status, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import uvicorn
@@ -19,12 +19,17 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:8080",
+    "http://127.0.0.1:8000/v1/upload",
+    "http://localhost:8000",
+    "http://localhost:5173",
+    
+    
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    # allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -36,7 +41,9 @@ app.add_middleware(
 PRE_FIX: str = "/v1"
 
 
-@app.get("/")
+
+
+@app.get("/", )
 async def root():
     """
     endpoint to check server status.
@@ -107,7 +114,7 @@ async def chat(item: ChatModel):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app='main:app', reload=True)
+    uvicorn.run(app='main:app', host='127.0.0.1', reload=True)
     
         
         
