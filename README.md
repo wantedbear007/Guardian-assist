@@ -74,8 +74,12 @@
     </li>
   </ol>
 
+  <h2>Preview</h2>
+  <img src="https://github.com/wantedbear007/Guardian-assist/blob/main/preview1.png" />
+  <img src="https://github.com/wantedbear007/Guardian-assist/blob/main/preview0.png" />
   <h2>Contributing</h2>
   <p>Contributions are welcome! If you'd like to contribute to this project, feel free to fork the repository and submit a pull request with your changes.</p>
+  
 
 </body>
 </html>
